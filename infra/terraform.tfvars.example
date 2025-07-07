@@ -1,0 +1,27 @@
+# AWS Configuration
+aws_region = "us-east-1"
+
+# Project Configuration
+project_name = "tower-jumps"
+environment  = "production"
+
+# Network Configuration
+vpc_cidr = "10.0.0.0/16"
+
+# Database Configuration
+db_instance_class     = "db.t3.micro"
+db_allocated_storage  = 20
+db_name              = "towerjumps"
+db_username          = "postgres"
+db_password          = "your-secure-password-here"  # Change this!
+
+# ECS Configuration
+ecs_cpu    = 256
+ecs_memory = 512
+
+# Docker Images
+backend_image  = "your-account-id.dkr.ecr.us-east-1.amazonaws.com/tower-jumps-backend:latest"
+frontend_image = "your-account-id.dkr.ecr.us-east-1.amazonaws.com/tower-jumps-frontend:latest"
+
+# Domain (optional)
+domain_name = ""  # Set this if you have a custom domain
