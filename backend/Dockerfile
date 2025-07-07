@@ -6,7 +6,20 @@ LABEL maintainer="jonnison@ufpi.edu.br"
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1
 
-    
+# Install system dependencies for GeoDjango
+RUN apt-get update && apt-get install -y \
+    gdal-bin \
+    libgdal-dev \
+    libgeos-dev \
+    libproj-dev \
+    libspatialindex-dev \
+    build-essential \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+
+ENV CPLUS_INCLUDE_PATH=/usr/include/gdal \
+    C_INCLUDE_PATH=/usr/include/gdal
+
 # Set working directory
 WORKDIR /app
 
@@ -23,7 +36,7 @@ ENV PATH="/app/.local/bin/:$PATH"
 
 # Install Python dependencies
 COPY --chown=appuser:appuser pyproject.toml uv.lock ./
-RUN uv sync --frozen
+# RUN uv sync --frozen
 ENV PATH="/app/.venv/bin:$PATH"
 
 # Copy the application code
