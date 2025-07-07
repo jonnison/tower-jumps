@@ -45,8 +45,8 @@ class SubscriberViewSet(viewsets.ModelViewSet):
         algorithm = LocationInferenceModel.get(model_id)
         
         interval = algorithm.infer_intervals(subscriber, pings=filtered_pings)
-
-        serializer = self.get_serializer(interval,context={"pings": filtered_pings})
+        print(f"Interval: {interval}", interval.__dict__)
+        serializer = self.get_serializer(interval, context={"pings": filtered_pings})
         return Response(serializer.data)
 
 class SubscriberPingViewSet(viewsets.ModelViewSet):

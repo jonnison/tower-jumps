@@ -92,7 +92,7 @@ class ClusteringModel(LocationInferenceModel):
             min_time = summary["min_time"].min()
             max_time = summary["max_time"].max()
             state_mode = summary["state_mode"].mode()[0] if not summary["state_mode"].empty else None
-            confidence = summary["confidence"].max()
+            confidence = max(0, min(100, summary["confidence"].max()))
             return  LocationInterval(
                     subscriber=subscriber,
                     interval_start=min_time,

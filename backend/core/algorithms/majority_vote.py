@@ -17,13 +17,10 @@ class MajorityVoteModel(LocationInferenceModel):
     method_id = LocationInterval.Method.MAJORITY_VOTE
     name = "Majority vote"
 
-    # ------------------------------------------------------------------
-    #  you only fill in infer_intervals()
-    # ------------------------------------------------------------------
     def infer_intervals(self, subscriber: Subscriber, pings: List[SubscriberPing]):
         qs = (
             pings
-            .values("utc_time", "state_id")            # state_id from ping cache
+            .values("utc_time", "state_id")
             .order_by("utc_time")
         )
 
