@@ -1,10 +1,11 @@
 from django.forms import ValidationError
+from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
 from core.algorithms import LocationInferenceModel
-from core.filters import SubscriberPingQueryFilter
+from core.filters import SubscriberFilter, SubscriberPingQueryFilter
 from core.serializers import LocationIntervalSerializer, StateSerializer, SubscriberSerializer, SubscriberPingSerializer
 from core.models import (
     LocationInterval,
@@ -20,6 +21,8 @@ class StateViewSet(viewsets.ModelViewSet):
 class SubscriberViewSet(viewsets.ModelViewSet):
     queryset = Subscriber.objects.all()
     serializer_class = SubscriberSerializer
+    filter_backends = (DjangoFilterBackend,)
+    filterset_class = SubscriberFilter
 
     @action(
         detail=True, 

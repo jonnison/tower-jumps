@@ -7,7 +7,7 @@ from core.models import State, Subscriber, SubscriberPing
 from django.contrib.gis.geos import Point
 
 class Command(BaseCommand):
-    help = 'My custom command with two parameters'
+    help = 'Command to import subscriber pings from a CSV file'
 
     def add_arguments(self, parser):
         parser.add_argument('subscriber_name', type=str, help='Subscriber name')
