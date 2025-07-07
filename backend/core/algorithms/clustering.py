@@ -27,7 +27,7 @@ class ClusteringModel(LocationInferenceModel):
             .order_by("utc_time")
         )
         if not qs.exists():
-            return []
+            return None
 
         df = pd.DataFrame([
             {

@@ -1,7 +1,7 @@
-from django.forms import ValidationError
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import viewsets
 from rest_framework.decorators import action
+from rest_framework.serializers import ValidationError
 from rest_framework.response import Response
 
 from core.algorithms import LocationInferenceModel
@@ -39,13 +39,12 @@ class SubscriberViewSet(viewsets.ModelViewSet):
         model_id = request.query_params.get("model_id", LocationInterval.Method.MAJORITY_VOTE)
         try:
             model_id = int(model_id)
-        except TypeError:
-            raise ValidationError("Invalid model_id parameter. Must be an integer.")
-        
+        except (TypeError, ValueError):
+            raise ValidationError({"model_id": "Invalid model_id parameter. Must be an integer."})
+
         algorithm = LocationInferenceModel.get(model_id)
         
         interval = algorithm.infer_intervals(subscriber, pings=filtered_pings)
-        print(f"Interval: {interval}", interval.__dict__)
         serializer = self.get_serializer(interval, context={"pings": filtered_pings})
         return Response(serializer.data)
 

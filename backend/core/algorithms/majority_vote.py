@@ -25,7 +25,7 @@ class MajorityVoteModel(LocationInferenceModel):
         )
 
         if not qs.exists():
-            return []
+            return None
         
         # Group by state_id and count occurrences
         state_counts = (
