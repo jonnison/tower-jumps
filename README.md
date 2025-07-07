@@ -248,13 +248,7 @@ VITE_API_URL=https://your-api.com
 ### Backend Tests
 ```bash
 cd backend
-python manage.py test
-```
-
-### Frontend Tests
-```bash
-cd frontend
-npm test
+uv run python manage.py test
 ```
 
 ## 🔍 Troubleshooting
