@@ -90,6 +90,12 @@ cp .env.example .env
 # Run migrations
 uv run python manage.py migrate
 
+# Import USA State shapes
+uv run python manage.py import_usa_states
+
+# Import Sample Subscriber data
+uv run python manage.py import_data SUBSCRIBER_NAME CSV_PATH
+
 # Start development server
 uv run python manage.py runserver
 ```

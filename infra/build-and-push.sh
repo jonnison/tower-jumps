@@ -33,7 +33,7 @@ docker tag ${PROJECT_NAME}-backend:latest $ECR_REPO_URL:latest
 
 # Login to ECR
 echo "Logging into ECR..."
-aws ecr get-login-password --region $AWS_REGION --profile cursos | docker login --username AWS --password-stdin $ECR_REPO_URL 
+aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $ECR_REPO_URL 
 
 # Push image to ECR
 echo "Pushing image to ECR..."
@@ -47,7 +47,7 @@ read -p "Do you want to force ECS service to restart and use the new image? (y/N
 echo
 if [[ $REPLY =~ ^[Yy]$ ]]; then
     echo "Forcing ECS service update..."
-    aws ecs update-service --profile cursos\
+    aws ecs update-service cursos\
         --cluster "${PROJECT_NAME}-cluster" \
         --service "${PROJECT_NAME}-backend-service" \
         --force-new-deployment \
