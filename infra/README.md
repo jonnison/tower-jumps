@@ -37,89 +37,81 @@ cp terraform.tfvars.example terraform.tfvars
 Edit `terraform.tfvars` with your specific values:
 
 - Change the `db_password` to a secure password
-- Update `backend_image` and `frontend_image` with your ECR repository URLs
+- Change the `django_secrets` to a secure value
+- Update `frontend_image` with your ECR repository URL (backend image is auto-managed)
 - Adjust other variables as needed
 
-### 3. Build and Push Docker Images
+### 3. Build zip file for lambda function
+```
+chmod +x package_lambda.sh
+./package_lambda.sh
+```
 
-#### Backend Image
+### 4. Deploy Infrastructure First
 
 ```bash
+# Initialize and deploy infrastructure (this creates the ECR repository)
+terraform init
+terraform plan
+terraform apply
+```
+
+### 5. Build and Push Docker Images
+
+#### Backend Image (Automated)
+
+The backend ECR repository is automatically created by Terraform. Use the provided script:
+
+```bash
+# Make the script executable
+chmod +x build-and-push.sh
+
+# Build and push backend image
+./build-and-push.sh
+```
+
+Or manually:
+
+```bash
+# Get ECR repository URL from Terraform output
+ECR_REPO_URL=$(terraform output -raw ecr_repository_url)
+
 # From project root
 cd backend
 
 # Build the image
 docker build -t tower-jumps-backend .
 
-# Tag for ECR (replace with your account ID and region)
-docker tag tower-jumps-backend:latest 123456789012.dkr.ecr.us-east-1.amazonaws.com/tower-jumps-backend:latest
+# Tag for ECR
+docker tag tower-jumps-backend:latest $ECR_REPO_URL:latest
+
+# Login to ECR
+aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin $ECR_REPO_URL
 
 # Push to ECR
-aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 123456789012.dkr.ecr.us-east-1.amazonaws.com
-docker push 123456789012.dkr.ecr.us-east-1.amazonaws.com/tower-jumps-backend:latest
+docker push $ECR_REPO_URL:latest
 ```
 
-#### Frontend Image
+#### Frontend and deploy
 
 ```bash
 # From project root
 cd frontend
 
+# Getting var from terraform
+DISTRIBUTION_ID=$(terraform output -raw cloudfront_distribution_id)
+S3_BUCKET=$(terraform output -raw s3_bucket_name)
+
 # Build the production React app
 npm run build
 
-# Create Dockerfile for production
-cat > Dockerfile.prod << EOF
-FROM nginx:alpine
-COPY dist/ /usr/share/nginx/html/
-COPY nginx.conf /etc/nginx/conf.d/default.conf
-EXPOSE 80
-CMD ["nginx", "-g", "daemon off;"]
-EOF
+# Sync to S3 (replace with your bucket name from outputs)
+aws s3 sync dist/ s3://tower-jumps-frontend-12345678/ --delete
 
-# Create nginx configuration
-cat > nginx.conf << EOF
-server {
-    listen 80;
-    server_name localhost;
-    
-    location / {
-        root /usr/share/nginx/html;
-        index index.html index.htm;
-        try_files \$uri \$uri/ /index.html;
-    }
-    
-    location /api/ {
-        # This will be handled by CloudFront routing
-        return 404;
-    }
-}
-EOF
-
-# Build and push
-docker build -f Dockerfile.prod -t tower-jumps-frontend .
-docker tag tower-jumps-frontend:latest 123456789012.dkr.ecr.us-east-1.amazonaws.com/tower-jumps-frontend:latest
-docker push 123456789012.dkr.ecr.us-east-1.amazonaws.com/tower-jumps-frontend:latest
-```
-
-### 4. Create ECR Repositories
-
-```bash
-aws ecr create-repository --repository-name tower-jumps-backend
-aws ecr create-repository --repository-name tower-jumps-frontend
-```
-
-### 5. Deploy Infrastructure
-
-```bash
-# Initialize Terraform
-terraform init
-
-# Plan the deployment
-terraform plan
-
-# Apply the configuration
-terraform apply
+# Invalidate CloudFront cache (replace with your distribution ID)
+aws cloudfront create-invalidation \
+    --distribution-id $DISTRIBUTION_ID \
+    --paths "/*"
 ```
 
 ## Post-Deployment

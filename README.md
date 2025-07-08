@@ -285,35 +285,4 @@ docker-compose logs frontend
 # Connect to database
 docker-compose exec db psql -U postgres towerjumps
 
-# Check ECS service status
-aws ecs describe-services --cluster tower-jumps-cluster --services tower-jumps-backend-service
-```
-
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
-
-## 📝 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## 🎯 Roadmap
-
-- [ ] Real-time location updates with WebSockets
-- [ ] Advanced analytics dashboard
-- [ ] Mobile app for data collection
-- [ ] Machine learning model improvements
-- [ ] Multi-tenant support
-- [ ] Advanced geofencing features
-
-## 📞 Support
-
-For support, please open an issue in the GitHub repository or contact the development team.
-
----
-
 **Built with ❤️ using Django, React, and AWS**

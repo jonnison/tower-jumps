@@ -19,6 +19,12 @@ output "rds_endpoint" {
   sensitive   = true
 }
 
+output "rds_host" {
+  description = "RDS instance host"
+  value       = aws_db_instance.postgres.address
+  sensitive   = true
+}
+
 output "rds_port" {
   description = "RDS instance port"
   value       = aws_db_instance.postgres.port
@@ -27,6 +33,16 @@ output "rds_port" {
 output "ecs_cluster_name" {
   description = "Name of the ECS cluster"
   value       = aws_ecs_cluster.main.name
+}
+
+output "ecr_repository_url" {
+  description = "URL of the ECR repository"
+  value       = aws_ecr_repository.ecr_repo.repository_url
+}
+
+output "ecr_repository_name" {
+  description = "Name of the ECR repository"
+  value       = aws_ecr_repository.ecr_repo.name
 }
 
 output "alb_dns_name" {

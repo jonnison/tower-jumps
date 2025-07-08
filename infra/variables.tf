@@ -4,6 +4,12 @@ variable "aws_region" {
   default     = "us-east-1"
 }
 
+variable "aws_profile" {
+  description = "The AWS CLI profile to use"
+  type        = string
+  default     = "default"
+}
+
 variable "environment" {
   description = "Environment name"
   type        = string
@@ -52,6 +58,12 @@ variable "db_password" {
   sensitive   = true
 }
 
+variable "django_secrets" {
+  description = "Django secret key"
+  type        = string
+  sensitive   = true  
+}
+
 variable "ecs_cpu" {
   description = "ECS task CPU"
   type        = number
@@ -62,20 +74,4 @@ variable "ecs_memory" {
   description = "ECS task memory"
   type        = number
   default     = 512
-}
-
-variable "backend_image" {
-  description = "Backend Docker image"
-  type        = string
-}
-
-variable "frontend_image" {
-  description = "Frontend Docker image"
-  type        = string
-}
-
-variable "domain_name" {
-  description = "Domain name for the application"
-  type        = string
-  default     = ""
 }

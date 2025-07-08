@@ -137,7 +137,7 @@ resource "aws_ecs_task_definition" "backend" {
   container_definitions = jsonencode([
     {
       name  = "backend"
-      image = var.backend_image
+      image = "${aws_ecr_repository.ecr_repo.repository_url}:latest"
       
       portMappings = [
         {
@@ -152,12 +152,20 @@ resource "aws_ecs_task_definition" "backend" {
           value = "False"
         },
         {
+          name  = "DJANGO_SECRET_KEY"
+          value = "${var.django_secrets}"
+        },
+        {
           name  = "ALLOWED_HOSTS"
           value = "*"
         },
         {
+          name  = "CORS_ALLOW_ALL_ORIGINS"
+          value = "true"
+        },
+        {
           name  = "DATABASE_URL"
-          value = "postgres://${var.db_username}:${var.db_password}@${aws_db_instance.postgres.endpoint}:5432/${var.db_name}"
+          value = "postgres://${var.db_username}:${var.db_password}@${aws_db_instance.postgres.endpoint}/${var.db_name}"
         }
       ]
 
@@ -178,6 +186,8 @@ resource "aws_ecs_task_definition" "backend" {
     Name        = "${var.project_name}-backend-task"
     Environment = var.environment
   }
+
+  depends_on = [aws_ecr_repository.ecr_repo]
 }
 
 # ECS Service for Backend

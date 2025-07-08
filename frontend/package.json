@@ -16,6 +16,8 @@
     "@mantine/hooks": "^7.17.8",
     "@mantine/notifications": "^7.17.8",
     "@tabler/icons-react": "^3.29.0",
+    "@types/leaflet": "^1.9.19",
+    "axios": "^1.10.0",
     "dayjs": "^1.11.13",
     "leaflet": "^1.9.4",
     "react": "^19.0.0",
@@ -24,6 +26,7 @@
     "react-router-dom": "^6.29.0"
   },
   "devDependencies": {
+    "@types/node": "^24.0.10",
     "@types/react": "^19.0.1",
     "@types/react-dom": "^19.0.1",
     "@typescript-eslint/eslint-plugin": "^8.18.1",

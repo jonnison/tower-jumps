@@ -1,5 +1,6 @@
 # AWS Configuration
 aws_region = "us-east-1"
+aws_profile = "default"
 
 # Project Configuration
 project_name = "tower-jumps"
@@ -15,13 +16,9 @@ db_name              = "towerjumps"
 db_username          = "postgres"
 db_password          = "your-secure-password-here"  # Change this!
 
+# Django 
+django_secrets = "your-secure-secret-here"
+
 # ECS Configuration
 ecs_cpu    = 256
 ecs_memory = 512
-
-# Docker Images
-backend_image  = "your-account-id.dkr.ecr.us-east-1.amazonaws.com/tower-jumps-backend:latest"
-frontend_image = "your-account-id.dkr.ecr.us-east-1.amazonaws.com/tower-jumps-frontend:latest"
-
-# Domain (optional)
-domain_name = ""  # Set this if you have a custom domain

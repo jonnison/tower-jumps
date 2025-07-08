@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react'
 import { useForm } from '@mantine/form';
 import { DateTimePicker } from '@mantine/dates';
 import { Card } from '@mantine/core';
-import { MapContainer, TileLayer, Marker, Popup, Circle, useMap } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, Popup, Circle , useMap } from 'react-leaflet';
 import L from 'leaflet';
 
 type Subscriber = {
@@ -172,20 +172,17 @@ function Dashboard() {
                 <Card.Section>
                   <div style={{ height: '400px' }}>
                     <MapContainer 
-                      center={inferenceResult.pings[0].coordinates} 
-                      zoom={6} 
                       style={{ height: '100%', width: '100%' }}
                       >
                       
                         <TileLayer
-                          attribution='&copy; OpenStreetMap contributors'
                           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                         />
                         {inferenceResult.pings.map((ping: any, index: number) => (
                           <Marker 
                             key={index} 
                             position={ping.coordinates}
-                            icon={ICONS[ping.cell_type]}
+                            icon={ ICONS[ping.cell_type as keyof typeof ICONS] }
                             >
                               <Popup>
                                 <Text>State: {ping.state}</Text>
@@ -209,7 +206,6 @@ function GroupPings({ pings, color }: { pings: any[], color?: string }) {
   const bounds = L.latLngBounds(pings.map(ping => L.latLng(ping.coordinates[0], ping.coordinates[1])));
   const center = bounds.getCenter();
   const radius = bounds.getNorthEast().distanceTo(bounds.getSouthWest()) / 2;
-
   map.fitBounds(bounds, { padding: [30, 30] });
 
   color = color || 'blue';

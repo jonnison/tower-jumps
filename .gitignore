@@ -267,3 +267,19 @@ temp/
 
 # Turbo
 .turbo
+
+# Terraform specific files
+terraform.tfvars
+enable_postgis.zip
+# Terraform state files
+*.tfstate
+*.tfstate.*
+crash.log
+crash.*.log
+.terraform/
+terraform.tfvars.json
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+.terraform.lock.hcl

@@ -7,7 +7,7 @@ resource "aws_security_group" "rds" {
     from_port       = 5432
     to_port         = 5432
     protocol        = "tcp"
-    security_groups = [aws_security_group.backend.id]
+    security_groups = [aws_security_group.backend.id, aws_security_group.lambda.id]
   }
 
   egress {
@@ -39,7 +39,7 @@ resource "aws_db_instance" "postgres" {
   identifier = "${var.project_name}-postgres"
 
   engine         = "postgres"
-  engine_version = "15.4"
+  engine_version = "17.2"
   instance_class = var.db_instance_class
 
   allocated_storage     = var.db_allocated_storage
@@ -73,8 +73,9 @@ resource "aws_lambda_function" "enable_postgis" {
   function_name    = "${var.project_name}-enable-postgis"
   role            = aws_iam_role.lambda_role.arn
   handler         = "index.handler"
-  runtime         = "python3.9"
-  timeout         = 60
+  runtime         = "python3.11"
+  timeout         = 120
+  memory_size     = 256
 
   vpc_config {
     subnet_ids         = aws_subnet.private[*].id
@@ -83,10 +84,11 @@ resource "aws_lambda_function" "enable_postgis" {
 
   environment {
     variables = {
-      DB_HOST     = aws_db_instance.postgres.endpoint
+      DB_HOST     = aws_db_instance.postgres.address
       DB_NAME     = var.db_name
       DB_USERNAME = var.db_username
       DB_PASSWORD = var.db_password
+      DB_PORT     = aws_db_instance.postgres.port
     }
   }
 
