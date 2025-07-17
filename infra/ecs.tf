@@ -138,7 +138,9 @@ resource "aws_ecs_task_definition" "backend" {
     {
       name  = "backend"
       image = "${aws_ecr_repository.ecr_repo.repository_url}:latest"
-      
+      linux_parameters = {
+        initProcessEnabled = true
+      }
       portMappings = [
         {
           containerPort = 8000
@@ -205,6 +207,7 @@ resource "aws_ecs_service" "backend" {
   task_definition = aws_ecs_task_definition.backend.arn
   desired_count   = 1
   launch_type     = "FARGATE"
+  enable_execute_command = true
 
   network_configuration {
     subnets         = aws_subnet.private[*].id
@@ -271,6 +274,27 @@ resource "aws_iam_role" "ecs_task_role" {
         Principal = {
           Service = "ecs-tasks.amazonaws.com"
         }
+      }
+    ]
+  })
+}
+
+resource "aws_iam_role_policy" "ecs_task_role_ssmmessages" {
+  name = "${var.project_name}-ecs-task-role-ssmmessages"
+  role = aws_iam_role.ecs_task_role.id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Action = [
+          "ssmmessages:CreateControlChannel",
+          "ssmmessages:CreateDataChannel",
+          "ssmmessages:OpenControlChannel",
+          "ssmmessages:OpenDataChannel"
+        ]
+        Resource = "*"
       }
     ]
   })
