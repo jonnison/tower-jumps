@@ -9,13 +9,12 @@ class SubscriberFilter(django_filters.FilterSet):
         fields = ['id', 'name']
 
 class SubscriberPingQueryFilter(django_filters.FilterSet):
-    start = django_filters.IsoDateTimeFilter(field_name='utc_time', lookup_expr='gte')
-    end = django_filters.IsoDateTimeFilter(field_name='utc_time', lookup_expr='lte')
+    start = django_filters.IsoDateTimeFilter(method="filter_date")
+    # end = django_filters.IsoDateTimeFilter(field_name='utc_time', lookup_expr='lte')
 
     class Meta:
         model = SubscriberPing
-        fields = ['start', 'end' ]
+        fields = ['start'] #, 'end' ]
 
-
-
-    
+    def filter_date(self, queryset, name, value):
+        return queryset.filter(utc_time__gte=value)

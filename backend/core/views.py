@@ -34,6 +34,7 @@ class SubscriberViewSet(viewsets.ModelViewSet):
         subscriber = self.get_object()
         subscriber_pings = subscriber.pings.all()
         # Apply SubscriberPingQueryFilter to subscriber_pings queryset
+        
         filtered_pings = SubscriberPingQueryFilter(request.query_params, subscriber_pings).qs
 
         model_id = request.query_params.get("model_id", LocationInterval.Method.MAJORITY_VOTE)

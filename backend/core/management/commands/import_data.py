@@ -16,6 +16,9 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         subscriber_name = options['subscriber_name']
         csv_path = options['csv']
+        if Subscriber.objects.filter(name=subscriber_name).exists():
+            return
+        print(f"POPULATING NEW DATA FOR {subscriber_name}")
 
         subscriber = Subscriber.objects.create(name=subscriber_name)
 
@@ -40,3 +43,5 @@ class Command(BaseCommand):
 
         self.stdout.write(f'Subscriber Name: {subscriber_name}')
         self.stdout.write(f'CSV File Path: {csv_path}')
+        self.stdout.write(f'Created Subscriber: {Subscriber.objects.all().count()}')
+        self.stdout.write(f'Created Subscriber Pings: {SubscriberPing.objects.all().count()}')

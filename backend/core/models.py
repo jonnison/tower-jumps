@@ -71,7 +71,7 @@ class LocationInterval(models.Model):
         MAJORITY_VOTE = 1, "Majority vote"
         CLUSTERING    = 2, "Clustering + smoothing"
 
-    subscriber      = models.ForeignKey(Subscriber, on_delete=models.CASCADE,
+    subscriber      = models.ForeignKey(Subscriber, on_delete=models.DO_NOTHING,
                                         related_name="intervals")
     subscriber_pings: List[SubscriberPing]
     interval_start  = models.DateTimeField()

@@ -16,6 +16,8 @@ class Command(BaseCommand):
 
     @transaction.atomic
     def handle(self, *args, **options):
+        if State.objects.all().exists():
+            return
         # Download US states shapefile from US Census Bureau
         url = "https://www2.census.gov/geo/tiger/GENZ2023/shp/cb_2023_us_state_500k.zip"
         with tempfile.TemporaryDirectory() as td:

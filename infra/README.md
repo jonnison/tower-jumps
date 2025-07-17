@@ -106,7 +106,7 @@ S3_BUCKET=$(terraform output -raw s3_bucket_name)
 npm run build
 
 # Sync to S3 (replace with your bucket name from outputs)
-aws s3 sync dist/ s3://tower-jumps-frontend-12345678/ --delete
+aws s3 sync dist/ s3://$S3_BUCKET/ --delete
 
 # Invalidate CloudFront cache (replace with your distribution ID)
 aws cloudfront create-invalidation \

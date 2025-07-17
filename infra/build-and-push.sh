@@ -33,7 +33,7 @@ docker tag ${PROJECT_NAME}-backend:latest $ECR_REPO_URL:latest
 
 # Login to ECR
 echo "Logging into ECR..."
-aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $ECR_REPO_URL 
+aws --profile cursos ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $ECR_REPO_URL 
 
 # Push image to ECR
 echo "Pushing image to ECR..."
@@ -47,7 +47,7 @@ read -p "Do you want to force ECS service to restart and use the new image? (y/N
 echo
 if [[ $REPLY =~ ^[Yy]$ ]]; then
     echo "Forcing ECS service update..."
-    aws ecs update-service cursos\
+    aws --profile cursos ecs update-service\
         --cluster "${PROJECT_NAME}-cluster" \
         --service "${PROJECT_NAME}-backend-service" \
         --force-new-deployment \
@@ -58,6 +58,7 @@ fi
 # Deploy frontend
 
 # Getting var from terraform
+cd ../infra
 DISTRIBUTION_ID=$(terraform output -raw cloudfront_distribution_id)
 S3_BUCKET=$(terraform output -raw s3_bucket_name)
 
@@ -68,10 +69,10 @@ npm run build
 echo "Frontend built successfully!"
 
 # Sync to S3 (replace with your bucket name from outputs)
-aws s3 sync dist/ s3://$S3_BUCKET/ --delete
+aws --profile cursos  s3 sync dist/ s3://$S3_BUCKET/ --delete
 
 # Invalidate CloudFront cache (replace with your distribution ID)
-aws cloudfront create-invalidation \
+aws --profile cursos  cloudfront create-invalidation \
     --distribution-id $DISTRIBUTION_ID \
     --paths "/*"
 

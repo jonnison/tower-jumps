@@ -2,6 +2,15 @@ FROM python:3.13-slim
 COPY --from=ghcr.io/astral-sh/uv:0.5.28 /uv /uvx /bin/
 LABEL maintainer="jonnison@ufpi.edu.br"
 
+# Install dependencies
+RUN apt-get update && apt-get install -y \
+    curl \
+    unzip \
+    gnupg \
+    ca-certificates \
+    procps \
+    libsystemd0
+
 # Set environment variables for security
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1
@@ -22,6 +31,9 @@ ENV CPLUS_INCLUDE_PATH=/usr/include/gdal \
 
 # Set working directory
 WORKDIR /app
+
+# Create log directory for SSM Agent and set permissions
+RUN mkdir -p /var/log/amazon && chown -R 1000:1000 /var/log/amazon
 
 # Create a non-root user
 RUN adduser --disabled-password --gecos '' --home /app appuser && chown -R appuser /app
@@ -46,4 +58,4 @@ COPY --chown=appuser:appuser . .
 EXPOSE 8000
 
 # ENTRYPOINT ["uv", "run", "--"]
-CMD [ "gunicorn","config.wsgi:application","--bind","0.0.0.0:8000","-t","40","--log-level","DEBUG" ]
+CMD [ "./entrypoint.sh"]

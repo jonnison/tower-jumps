@@ -97,13 +97,13 @@ resource "aws_lb_target_group" "backend" {
   health_check {
     enabled             = true
     healthy_threshold   = 2
-    interval            = 30
+    interval            = 60
     matcher             = "200"
     path                = "/api/health/"
     port                = "traffic-port"
     protocol            = "HTTP"
-    timeout             = 5
-    unhealthy_threshold = 2
+    timeout             = 10
+    unhealthy_threshold = 5
   }
 
   tags = {
@@ -149,7 +149,7 @@ resource "aws_ecs_task_definition" "backend" {
       environment = [
         {
           name  = "DEBUG"
-          value = "False"
+          value = "true"
         },
         {
           name  = "DJANGO_SECRET_KEY"
@@ -165,9 +165,17 @@ resource "aws_ecs_task_definition" "backend" {
         },
         {
           name  = "DATABASE_URL"
-          value = "postgres://${var.db_username}:${var.db_password}@${aws_db_instance.postgres.endpoint}/${var.db_name}"
+          value = "postgis://${var.db_username}:${var.db_password}@${aws_db_instance.postgres.endpoint}/${var.db_name}"
         }
       ]
+
+      healthCheck = {
+        command = ["CMD-SHELL", "curl -f http://localhost:8000/api/health/ || exit 1"]
+        interval = 30
+        timeout = 5
+        retries = 3
+        startPeriod = 120
+      }
 
       logConfiguration = {
         logDriver = "awslogs"
@@ -195,7 +203,7 @@ resource "aws_ecs_service" "backend" {
   name            = "${var.project_name}-backend-service"
   cluster         = aws_ecs_cluster.main.id
   task_definition = aws_ecs_task_definition.backend.arn
-  desired_count   = 2
+  desired_count   = 1
   launch_type     = "FARGATE"
 
   network_configuration {

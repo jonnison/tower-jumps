@@ -131,6 +131,8 @@ function Dashboard() {
           ...ping,
           coordinates: parseGeomToLatLng(ping.geom),
         }))
+        data.pings = data.pings.filter((ping: any) => ping.coordinates && ping.coordinates.length === 2);
+        data.pings = data.pings.slice(0, 100); // Limit to 100 pings for performance
         setInferenceResult(data)
         setColor(colorPalette(data.confidence_pct));
       } catch (error) {
@@ -172,6 +174,8 @@ function Dashboard() {
                 <Card.Section>
                   <div style={{ height: '400px' }}>
                     <MapContainer 
+                      center={[41.2033, -77.1945]} // Default center (Pennsylvania)
+                      zoom={10}
                       style={{ height: '100%', width: '100%' }}
                       >
                       
